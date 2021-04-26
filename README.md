@@ -17,16 +17,40 @@ Flask API using JWT token
 
 - Install all the dependencies
 
+```bash
+python -m pip install -r requirements.txt
+```
+
+- Add your secret key in `.env.example` and save as it `.env`.
+
+- Load Environment variable
+
+```bash
+# linux
+> export FLASK_APP=manage
+> export FLASK_ENV=development
+```
+
+```cmd
+# windows powershell
+> $env:FLASK_APP=manage
+> $env:FLASK_ENV=development
+```
+
+Get more details about the flask env check docs [here](https://flask.palletsprojects.com/en/1.1.x/cli/)
+
 - Migrate the database
   
 ```bash
-$ python manage.py db init
-$ python manage.py db migrate
-$ python manage.py db upgrade
+> flask db init
+> flask db migrate -m "Initial migration."
+> flask db upgrade
 ```
 
+- Run the server
+
 ```bash
-$ python manage.py runserver
+flask run
 ```
 
 - Create a admin user on `url/user`. Give admin access using sql query
@@ -54,3 +78,4 @@ $ python manage.py runserver
 ## Upcoming Change in Repo
 
 - Api limiter
+- Blog API

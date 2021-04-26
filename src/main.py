@@ -209,6 +209,3 @@ def delete_todo(current_user, todo_id):
     db.session.commit()
 
     return jsonify({'status': f"{todo.todo_name} deleted from db"})
-
-if __name__ == '__main__':
-    app.run()
