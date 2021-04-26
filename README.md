@@ -15,19 +15,18 @@ Flask API using JWT token
 
 ## Documentation
 
-- install all the dependencies
-- Create Db using the terminal
+- Install all the dependencies
 
+- Migrate the database
+  
 ```bash
-from main import db
-db.create_all()
-exit()
+$ python manage.py db init
+$ python manage.py db migrate
+$ python manage.py db upgrade
 ```
 
-- run the server
-
 ```bash
-python src/main.py
+$ python manage.py runserver
 ```
 
 - Create a admin user on `url/user`. Give admin access using sql query

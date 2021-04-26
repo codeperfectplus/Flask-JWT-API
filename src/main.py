@@ -1,23 +1,28 @@
 import jwt
 import uuid
 import datetime
+from functools import wraps
 from flask import request
 from flask import jsonify
 from flask import make_response
+
 from werkzeug.security import generate_password_hash
 from werkzeug.security import check_password_hash
 
-from config import app
-from models import UserModel, TodoModel
-from models import db
-from schemas import UserSchema, TodoSchema
-from functools import wraps
+from flask_migrate import Migrate, MigrateCommand
+from flask_script import Manager
+
+from src.config import app
+from src.models import UserModel, TodoModel
+from src.models import db
+from src.schemas import UserSchema, TodoSchema
 
 ''' Schemas '''
 user_schema = UserSchema()
 users_schema = UserSchema(many=True)
 todo_schema = TodoSchema()
 todos_schema = TodoSchema(many=True)
+
 
 
 def token_required(f):
@@ -163,43 +168,39 @@ def create_todo(current_user):
 @app.route('/todo', methods=['GET'])
 @token_required
 def get_all_todos(current_user):
-    todos = TodoModel.query.all()
+    todos = TodoModel.query.filter_by(author=current_user.username).all()
     result = todos_schema.dump(todos)
 
     return jsonify(result)
 
-@app.route('/todo/<id>', methods=['GET'])
+@app.route('/todo/<todo_id>', methods=['GET'])
 @token_required
-def get_one_todo(current_user, id):
-    todo = TodoModel.query.filter_by(id=id).first()
+def get_one_todo(current_user, todo_id):
+    todo = TodoModel.query.filter_by(todo_id=todo_id, author=current_user.username).first()
 
     if todo is None:
-        return jsonify({'Status': f'There is no user by {todo}'})
+        return jsonify({'Status': 'There is no todo'})
 
     return todo_schema.jsonify(todo)
 
-@app.route('/todo/<id>', methods=['PUT'])
+@app.route('/todo/<todo_id>', methods=['PUT'])
 @token_required
-def update_todo(current_user, id):
-    todo_name = request.json['todo_name']
+def update_complete(current_user, todo_id):
     is_complete = request.json['is_complete']
-    author = current_user.username
 
-    todo = TodoModel.query.filter_by(id=id).first()
+    todo = TodoModel.query.filter_by(todo_id=todo_id, author=current_user.username).first()
     if not todo:
         return jsonify({'Status': f'There is no user by {todo}'})
 
-    todo.todo_name = todo_name
     todo.is_complete = is_complete
-    todo.author = author
     db.session.commit()
 
-    return todo_schema.jsonify(todo)
+    return jsonify({"status": "Todo has been completed"})
 
-@app.route('/todo/<id>', methods=['DELETE'])
+@app.route('/todo/<todo_id>', methods=['DELETE'])
 @token_required
-def delete_todo(current_user, id):
-    todo = TodoModel.query.filter_by(id=id).first()
+def delete_todo(current_user, todo_id):
+    todo = TodoModel.query.filter_by(todo_id=todo_id, author=current_user.username).first()
 
     if todo is None:
         return jsonify({'status': 'Invalid todo Id'})

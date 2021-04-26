@@ -1,14 +1,13 @@
 from flask_sqlalchemy import SQLAlchemy
 
-from config import app
+from src.config import app
 
 db = SQLAlchemy(app)
-
 class UserModel(db.Model):
 
     __tablename__ = 'users'
 
-    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, primary_key=True)
     public_id = db.Column(db.String(50), unique=True)
     username = db.Column(db.String(50), unique=True, nullable=False)
     password = db.Column(db.String(80), nullable=False)
@@ -20,11 +19,14 @@ class UserModel(db.Model):
         self.password = password
         self.admin = admin
 
+    def __repr__(self):
+        return self.username
+
 class TodoModel(db.Model):
 
     __tablename__ = 'todos'
 
-    id = db.Column(db.Integer, primary_key=True)
+    todo_id = db.Column(db.Integer, primary_key=True)
     todo_name = db.Column(db.String(100), nullable=False)
     is_complete = db.Column(db.Boolean, nullable=False)
     author = db.Column(db.String(50))
@@ -33,3 +35,6 @@ class TodoModel(db.Model):
         self.todo_name = todo_name
         self.is_complete = is_complete
         self.author = author
+
+    def __repr__(self):
+        return self.todo_name

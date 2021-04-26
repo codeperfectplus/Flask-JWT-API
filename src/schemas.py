@@ -1,6 +1,6 @@
 from flask_marshmallow import Marshmallow
 
-from config import app
+from src.config import app
 
 ma = Marshmallow(app)
 
