@@ -10,4 +10,4 @@ class UserSchema(ma.Schema):
 
 class TodoSchema(ma.Schema):
     class Meta:
-        fields = ('id', 'todo_name', 'is_complete')
+        fields = ('id', 'todo_name', 'is_complete', 'author')

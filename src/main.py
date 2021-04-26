@@ -44,8 +44,6 @@ def token_required(f):
 
 
 """ User API """
-
-
 @app.route('/user', methods=['POST'])
 def create_user():
     ''' Create new user in Database '''
@@ -100,7 +98,6 @@ def promote_demote_user(current_user, username):
     admin = request.json['admin']
 
     user = UserModel.query.filter_by(username=username).first()
-    print(user)
     if user is None:
         return jsonify({'Status': f'There is no user by {username}'})
 
@@ -147,17 +144,16 @@ def login():
     return make_response('could not verify !', 401, {'WWW-Authenticate': 'Basic realm="Login Required!'})
 
 """ Todo API """
-
 @app.route('/todo', methods=['POST'])
 @token_required
 def create_todo(current_user):
     todo_name = request.json["todo_name"].lower()
-    is_complete = request.json['is_complete']
+    author = current_user.username
 
     todo = TodoModel.query.filter_by(todo_name=todo_name).first()
 
     if todo is None:
-        new_todo = TodoModel(todo_name=todo_name, is_complete=is_complete)
+        new_todo = TodoModel(todo_name=todo_name, is_complete=False, author=author)
 
         db.session.add(new_todo)
         db.session.commit()
@@ -169,17 +165,45 @@ def create_todo(current_user):
 def get_all_todos(current_user):
     todos = TodoModel.query.all()
     result = todos_schema.dump(todos)
+
     return jsonify(result)
+
+@app.route('/todo/<id>', methods=['GET'])
+@token_required
+def get_one_todo(current_user, id):
+    todo = TodoModel.query.filter_by(id=id).first()
+
+    if todo is None:
+        return jsonify({'Status': f'There is no user by {todo}'})
+
+    return todo_schema.jsonify(todo)
+
+@app.route('/todo/<id>', methods=['PUT'])
+@token_required
+def update_todo(current_user, id):
+    todo_name = request.json['todo_name']
+    is_complete = request.json['is_complete']
+    author = current_user.username
+
+    todo = TodoModel.query.filter_by(id=id).first()
+    if not todo:
+        return jsonify({'Status': f'There is no user by {todo}'})
+
+    todo.todo_name = todo_name
+    todo.is_complete = is_complete
+    todo.author = author
+    db.session.commit()
+
+    return todo_schema.jsonify(todo)
 
 @app.route('/todo/<id>', methods=['DELETE'])
 @token_required
 def delete_todo(current_user, id):
     todo = TodoModel.query.filter_by(id=id).first()
-    print(todo)
 
     if todo is None:
         return jsonify({'status': 'Invalid todo Id'})
-    
+
     db.session.delete(todo)
     db.session.commit()
 

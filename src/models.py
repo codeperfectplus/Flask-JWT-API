@@ -27,7 +27,9 @@ class TodoModel(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     todo_name = db.Column(db.String(100), nullable=False)
     is_complete = db.Column(db.Boolean, nullable=False)
+    author = db.Column(db.String(50))
 
-    def __init__(self, todo_name, is_complete):
+    def __init__(self, todo_name, is_complete, author):
         self.todo_name = todo_name
         self.is_complete = is_complete
+        self.author = author

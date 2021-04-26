@@ -11,7 +11,7 @@ Flask API using JWT token
 - User have no access to User class
 - Admin Can do `CRUD` operations on Users, Todo
 - Password will saved as hased password
-- User Can generate the X-access-token for other not Admin APIs
+- User Can generate the X-access-token for get/post todo api
 
 ## Documentation
 
