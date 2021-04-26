@@ -9,9 +9,6 @@ from flask import make_response
 from werkzeug.security import generate_password_hash
 from werkzeug.security import check_password_hash
 
-from flask_migrate import Migrate, MigrateCommand
-from flask_script import Manager
-
 from src.config import app
 from src.models import UserModel, TodoModel
 from src.models import db
