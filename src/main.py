@@ -43,6 +43,9 @@ def token_required(f):
 
     return decorated
 
+@app.route('/', methods=['GET'])
+def home():
+    return jsonify({'status': 'Online'})
 
 """ User API """
 @app.route('/user', methods=['POST'])
