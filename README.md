@@ -21,7 +21,10 @@ Flask API using JWT token
 python -m pip install -r requirements.txt
 ```
 
-- Add your secret key in `.env.example` and save as it `.env`.
+- Add environment varibale and in `.env.example` and save as it `.env`.
+
+  - DATABASE_URL
+  - SECRET_KEY
 
 - Load Environment variable
 
