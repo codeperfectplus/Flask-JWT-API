@@ -21,7 +21,6 @@ todo_schema = TodoSchema()
 todos_schema = TodoSchema(many=True)
 
 
-
 def token_required(f):
     @wraps(f)
     def decorated(*args, **kwargs):
@@ -78,10 +77,10 @@ def get_all_users(current_user):
 @app.route('/user/<username>', methods=['GET'])
 @token_required
 def get_user_by_username(current_user, username):
+    ''' get user by username '''
     if not current_user.admin:
         return jsonify({'status': 'You are not an admin.'})
 
-    ''' get user by username '''
     user = UserModel.query.filter_by(username=username).first()
     if user is None:
         return jsonify({'Status': f'There is no user by {username}'})
@@ -92,18 +91,16 @@ def get_user_by_username(current_user, username):
 @app.route('/user/<username>', methods=['PUT'])
 @token_required
 def promote_demote_user(current_user, username):
+    ''' promote admin status or change password '''
     if not current_user.admin:
         return jsonify({'status':  'You are not an admin.'})
-    ''' promote admin status or change password '''
-    username = request.json['username'].lower()
-    password = request.json['password']
+
     admin = request.json['admin']
 
     user = UserModel.query.filter_by(username=username).first()
     if user is None:
         return jsonify({'Status': f'There is no user by {username}'})
 
-    user.password = generate_password_hash(password=password, method='sha256')
     user.admin = admin
     db.session.commit()
     return user_schema.jsonify(user)
@@ -112,10 +109,10 @@ def promote_demote_user(current_user, username):
 @app.route('/user/<username>', methods=['DELETE'])
 @token_required
 def delete_user(current_user, username):
+    ''' Delete the user records from database '''
     if not current_user.admin:
         return jsonify({'status':  'You are not an admin.'})
 
-    ''' Delete the user records from database '''
     username = request.json['username'].lower()
 
     user = UserModel.query.filter_by(username=username).first()
@@ -129,6 +126,7 @@ def delete_user(current_user, username):
 
 @app.route('/login')
 def login():
+    ''' generate the jwt token using HTTPBasicAuth '''
     auth = request.authorization
     if not auth or not auth.username or not auth.password:
         return make_response('could not verify !', 401, {'WWW-Authenticate': 'Basic realm="Login Required!'})
@@ -149,6 +147,7 @@ def login():
 @app.route('/todo', methods=['POST'])
 @token_required
 def create_todo(current_user):
+    ''' create new todo '''
     todo_name = request.json["todo_name"].lower()
     author = current_user.username
 
@@ -165,6 +164,7 @@ def create_todo(current_user):
 @app.route('/todo', methods=['GET'])
 @token_required
 def get_all_todos(current_user):
+    ''' get all todos list '''
     todos = TodoModel.query.filter_by(author=current_user.username).all()
     result = todos_schema.dump(todos)
 
@@ -173,6 +173,7 @@ def get_all_todos(current_user):
 @app.route('/todo/<todo_id>', methods=['GET'])
 @token_required
 def get_one_todo(current_user, todo_id):
+    """ get todo by id """
     todo = TodoModel.query.filter_by(todo_id=todo_id, author=current_user.username).first()
 
     if todo is None:
@@ -183,6 +184,7 @@ def get_one_todo(current_user, todo_id):
 @app.route('/todo/<todo_id>', methods=['PUT'])
 @token_required
 def update_complete(current_user, todo_id):
+    ''' update the todo by id '''
     is_complete = request.json['is_complete']
 
     todo = TodoModel.query.filter_by(todo_id=todo_id, author=current_user.username).first()
@@ -197,6 +199,7 @@ def update_complete(current_user, todo_id):
 @app.route('/todo/<todo_id>', methods=['DELETE'])
 @token_required
 def delete_todo(current_user, todo_id):
+    ''' delete todo record by id '''
     todo = TodoModel.query.filter_by(todo_id=todo_id, author=current_user.username).first()
 
     if todo is None:

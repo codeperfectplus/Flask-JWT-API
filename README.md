@@ -40,7 +40,7 @@ python -m pip install -r requirements.txt
 Get more details about the flask env check docs [here](https://flask.palletsprojects.com/en/1.1.x/cli/)
 
 - Migrate the database
-  
+
 ```bash
 > flask db init
 > flask db migrate -m "Initial migration."
@@ -74,6 +74,23 @@ flask run
 
 - Perform All other operations using the jwt tokens.
 - Todo Operations can done with x-access-token
+
+## Example
+
+```python
+import requests
+
+headers = {
+"x-access-token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImFkbWluIn0.vrCzbqJLbP8wejP_ZE1hi2U3bSlRwF2rln02J0qmc9A"}
+
+url = "http://127.0.0.1:5000/user"
+
+json = { "todo_name": "Complete" }
+
+#response = requests.get(url,headers=headers)
+response = requests.post(url, json=json, headers=headers)
+print(response.text)
+```
 
 ## Upcoming Change in Repo
 
