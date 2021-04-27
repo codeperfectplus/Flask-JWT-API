@@ -9,7 +9,7 @@ def create_app():
 
     app.config['DEBUG'] = True
     app.config['SECRET_KEY'] = os.environ['SECRET_KEY']
-    app.config['SQLALCHEMY_DATABASE_URI'] = os.environ["DATABASE_URL"]
+    app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL?sslmode=require').replace('postgres://', 'postgresql://')
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
     return app
